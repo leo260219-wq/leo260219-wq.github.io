@@ -5,78 +5,68 @@
 <title>GHS的第一个网站</title>
 
 <style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-  height: 100vh;
+  min-height: 100vh;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial;
   display: flex;
   justify-content: center;
   align-items: center;
   transition: 1s;
   color: white;
+  flex-direction: column;
 }
 
-/* 不同时间段背景 */
-.morning {
-  background: linear-gradient(45deg, #ff9a9e, #fad0c4);
-}
-
-.afternoon {
-  background: linear-gradient(45deg, #4facfe, #00f2fe);
-}
-
-.evening {
-  background: linear-gradient(45deg, #f093fb, #f5576c);
-}
-
-.night {
-  background: linear-gradient(45deg, #141e30, #243b55);
-}
+/* 时间段背景 */
+.morning { background: linear-gradient(45deg,#ff9a9e,#fad0c4); }
+.afternoon { background: linear-gradient(45deg,#4facfe,#00f2fe); }
+.evening { background: linear-gradient(45deg,#f093fb,#f5576c); }
+.night { background: linear-gradient(45deg,#141e30,#243b55); }
 
 .card {
   backdrop-filter: blur(20px);
   background: rgba(255,255,255,0.1);
-  padding: 60px;
+  padding: 40px;
   border-radius: 20px;
   text-align: center;
   box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  width: 90%;
+  max-width: 600px;
+  margin-top: 30px;
 }
 
-h1 {
-  font-size: 48px;
-  margin-bottom: 20px;
+h1 { font-size: 42px; margin-bottom: 10px; }
+.time { margin-bottom: 15px; }
+
+input, textarea {
+  width: 100%;
+  padding: 8px;
+  margin: 6px 0;
+  border-radius: 6px;
+  border: none;
 }
 
-.time {
-  font-size: 20px;
-  margin-bottom: 20px;
-}
-
-.visit {
-  margin-top: 20px;
-  font-size: 14px;
-  opacity: 0.8;
-}
-
-.btn {
-  display: inline-block;
-  padding: 10px 25px;
-  border-radius: 25px;
-  text-decoration: none;
+button {
+  padding: 8px 20px;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  background: #0072ff;
   color: white;
-  font-weight: bold;
-  background: linear-gradient(45deg, #00c6ff, #0072ff);
-  transition: 0.3s;
-  margin-top: 20px;
+  margin-top: 5px;
 }
 
-.btn:hover {
-  transform: scale(1.1);
+.message {
+  margin-top: 10px;
+  font-size: 14px;
+  text-align: left;
+}
+
+footer {
+  margin-top: 20px;
+  font-size: 12px;
+  opacity: 0.8;
 }
 </style>
 </head>
@@ -86,47 +76,81 @@ h1 {
 <div class="card">
   <h1>Leo 🚀</h1>
   <div class="time" id="time"></div>
+
   <p>欢迎来到我的第一个网站</p>
-  <a href="posts/first-post.html" class="btn">进入成长记录</a>
-  <div class="visit">访问次数：<span id="visitCount"></span></div>
+
+  <hr style="margin:20px 0;opacity:0.3;">
+
+  <h3>💬 留言板</h3>
+  <input type="text" id="name" placeholder="你的署名">
+  <textarea id="message" rows="3" placeholder="写下你的留言..."></textarea>
+  <button onclick="addMessage()">提交留言</button>
+
+  <div id="messages" class="message"></div>
+
+  <div style="margin-top:20px;">
+    <audio id="bgm" controls loop>
+      <source src="music.mp3" type="audio/mpeg">
+    </audio>
+  </div>
+
+  <footer>
+    🎵 当前音乐：<span id="musicName">music.mp3</span><br>
+    访问次数：<span id="visitCount"></span>
+  </footer>
 </div>
 
 <script>
-/* 自动时间显示 */
-function updateTime() {
+/* 时间显示 */
+function updateTime(){
   const now = new Date();
-  const timeString = now.toLocaleString();
-  document.getElementById("time").innerText = timeString;
+  document.getElementById("time").innerText = now.toLocaleString();
 }
-setInterval(updateTime, 1000);
+setInterval(updateTime,1000);
 updateTime();
 
-/* 根据时间自动变色 */
-function setBackgroundByTime() {
-  const hour = new Date().getHours();
-  let body = document.body;
-
-  if (hour >= 5 && hour < 12) {
-    body.className = "morning";
-  } else if (hour >= 12 && hour < 17) {
-    body.className = "afternoon";
-  } else if (hour >= 17 && hour < 20) {
-    body.className = "evening";
-  } else {
-    body.className = "night";
-  }
+/* 自动变色 */
+function setBackground(){
+  const h=new Date().getHours();
+  if(h>=5&&h<12) document.body.className="morning";
+  else if(h>=12&&h<17) document.body.className="afternoon";
+  else if(h>=17&&h<20) document.body.className="evening";
+  else document.body.className="night";
 }
-setBackgroundByTime();
+setBackground();
 
-/* 本地访问统计（简单版） */
-let count = localStorage.getItem("visitCount");
-if (!count) {
-  count = 1;
-} else {
-  count = parseInt(count) + 1;
+/* 本地访问统计 */
+let count=localStorage.getItem("visitCount");
+count=count?parseInt(count)+1:1;
+localStorage.setItem("visitCount",count);
+document.getElementById("visitCount").innerText=count;
+
+/* 留言板 */
+function loadMessages(){
+  let messages=JSON.parse(localStorage.getItem("messages"))||[];
+  let container=document.getElementById("messages");
+  container.innerHTML="";
+  messages.forEach(m=>{
+    let div=document.createElement("div");
+    div.innerText=m.text+" —— "+m.name;
+    container.appendChild(div);
+  });
 }
-localStorage.setItem("visitCount", count);
-document.getElementById("visitCount").innerText = count;
+function addMessage(){
+  let name=document.getElementById("name").value||"匿名";
+  let text=document.getElementById("message").value;
+  if(!text) return;
+  let messages=JSON.parse(localStorage.getItem("messages"))||[];
+  messages.push({name:name,text:text});
+  localStorage.setItem("messages",JSON.stringify(messages));
+  document.getElementById("message").value="";
+  loadMessages();
+}
+loadMessages();
+
+/* 音乐名称显示 */
+document.getElementById("musicName").innerText=
+document.getElementById("bgm").querySelector("source").src.split("/").pop();
 </script>
 
 </body>
