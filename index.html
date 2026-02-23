@@ -9,17 +9,42 @@
 body{
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial;
   color:white;
-  transition:1s;
   min-height:100vh;
+  transition:1s;
+  overflow-x:hidden;
 }
 
-/* 背景渐变 */
+/* ===== 视频背景 ===== */
+#bgVideo{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  z-index:-2;
+  display:none;
+}
+
+/* 暗色遮罩 */
+.video-overlay{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.35);
+  z-index:-1;
+  display:none;
+}
+
+/* ===== 渐变背景 ===== */
 .morning{background:linear-gradient(45deg,#ff9a9e,#fad0c4);}
 .afternoon{background:linear-gradient(45deg,#4facfe,#00f2fe);}
 .evening{background:linear-gradient(45deg,#f093fb,#f5576c);}
 .night{background:linear-gradient(45deg,#141e30,#243b55);}
 
-/* 导航栏 */
+/* ===== 导航栏 ===== */
 .nav{
   display:flex;
   justify-content:center;
@@ -29,48 +54,73 @@ body{
   backdrop-filter:blur(10px);
   position:sticky;
   top:0;
+  z-index:10;
 }
 .nav div{
   cursor:pointer;
   font-weight:bold;
+  transition:0.3s;
+}
+.nav div:hover{
+  transform:scale(1.1);
 }
 
-/* 页面 */
+/* ===== 页面 ===== */
 .page{
   display:none;
-  padding:40px;
+  padding:60px 20px;
   text-align:center;
 }
 .active{
   display:block;
 }
 
-/* iframe推荐区域 */
+/* iframe */
 .iframe-box{
   margin-top:20px;
   width:100%;
   height:500px;
-  border-radius:10px;
+  border-radius:12px;
   overflow:hidden;
 }
 iframe{
   width:100%;
   height:100%;
   border:none;
-  background:white;
-  border-radius:10px;
+  border-radius:12px;
 }
 
-footer{
-  margin-top:30px;
-  font-size:12px;
-  opacity:0.7;
+/* 留言板 */
+input,textarea{
+  width:60%;
+  padding:10px;
+  margin:8px 0;
+  border-radius:8px;
+  border:none;
+}
+button{
+  padding:10px 20px;
+  border-radius:20px;
+  border:none;
+  cursor:pointer;
+  background:#0072ff;
+  color:white;
+}
+#messages div{
+  margin-top:10px;
 }
 </style>
 </head>
 
 <body>
 
+<!-- 背景视频 -->
+<video id="bgVideo" autoplay muted loop playsinline>
+  <source src="tahiti.mp4" type="video/mp4">
+</video>
+<div class="video-overlay" id="overlay"></div>
+
+<!-- 导航 -->
 <div class="nav">
   <div onclick="showPage('home')">首页</div>
   <div onclick="showPage('recommend')">我的推荐</div>
@@ -79,7 +129,7 @@ footer{
 
 <!-- 首页 -->
 <div id="home" class="page active">
-  <h1>Leo 🚀</h1>
+  <h1 style="font-size:48px;">Leo 🚀</h1>
   <p style="margin-top:10px;">欢迎来到我的第一个网站</p>
   <p id="time" style="margin-top:15px;"></p>
 </div>
@@ -89,9 +139,8 @@ footer{
   <h2>🌟 我的推荐</h2>
 
   <h3 style="margin-top:30px;">🚇 中国地铁可视化</h3>
-  <p>原作者：高德地图数据可视化团队（GitHub开源项目）</p>
+  <p>原作者：开源可视化项目开发者</p>
   <p>获取方式：GitHub 搜索“中国地铁可视化”</p>
-
   <div class="iframe-box">
     <iframe src="https://service.shmetro.com/axlcz01/index.htm"></iframe>
   </div>
@@ -99,21 +148,16 @@ footer{
   <h3 style="margin-top:40px;">🧠 Learn Anything</h3>
   <p>原作者：Sahand Saba 等开发者</p>
   <p>获取方式：https://github.com/learn-anything/learn-anything.xyz</p>
-
   <div class="iframe-box">
     <iframe src="https://learn-anything.xyz/"></iframe>
   </div>
-
-  <footer>
-    ⚠️ 所有项目版权归原作者所有，仅作学习展示用途
-  </footer>
 </div>
 
 <!-- 留言板 -->
 <div id="board" class="page">
   <h2>💬 留言板</h2>
-  <input type="text" id="name" placeholder="你的署名"><br><br>
-  <textarea id="message" rows="3" placeholder="写下你的留言..." style="width:60%;"></textarea><br><br>
+  <input type="text" id="name" placeholder="你的署名"><br>
+  <textarea id="message" rows="3" placeholder="写下你的留言..."></textarea><br>
   <button onclick="addMessage()">提交</button>
 
   <div id="messages" style="margin-top:20px;"></div>
@@ -125,9 +169,22 @@ footer{
 function showPage(id){
   document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
   document.getElementById(id).classList.add("active");
+
+  const video=document.getElementById("bgVideo");
+  const overlay=document.getElementById("overlay");
+
+  if(id==="home"){
+    video.style.display="block";
+    overlay.style.display="block";
+    document.body.className="";
+  }else{
+    video.style.display="none";
+    overlay.style.display="none";
+    setBg();
+  }
 }
 
-/* 时间 */
+/* 自动时间 */
 function updateTime(){
   document.getElementById("time").innerText=
     new Date().toLocaleString();
@@ -135,7 +192,7 @@ function updateTime(){
 setInterval(updateTime,1000);
 updateTime();
 
-/* 自动背景 */
+/* 渐变背景 */
 function setBg(){
   const h=new Date().getHours();
   if(h>=5&&h<12) document.body.className="morning";
