@@ -5,152 +5,169 @@
 <title>GHS的第一个网站</title>
 
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
-body {
-  min-height: 100vh;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: 1s;
-  color: white;
-  flex-direction: column;
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial;
+  color:white;
+  transition:1s;
+  min-height:100vh;
 }
 
-/* 时间段背景 */
-.morning { background: linear-gradient(45deg,#ff9a9e,#fad0c4); }
-.afternoon { background: linear-gradient(45deg,#4facfe,#00f2fe); }
-.evening { background: linear-gradient(45deg,#f093fb,#f5576c); }
-.night { background: linear-gradient(45deg,#141e30,#243b55); }
+/* 背景渐变 */
+.morning{background:linear-gradient(45deg,#ff9a9e,#fad0c4);}
+.afternoon{background:linear-gradient(45deg,#4facfe,#00f2fe);}
+.evening{background:linear-gradient(45deg,#f093fb,#f5576c);}
+.night{background:linear-gradient(45deg,#141e30,#243b55);}
 
-.card {
-  backdrop-filter: blur(20px);
-  background: rgba(255,255,255,0.1);
-  padding: 40px;
-  border-radius: 20px;
-  text-align: center;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-  width: 90%;
-  max-width: 600px;
-  margin-top: 30px;
+/* 导航栏 */
+.nav{
+  display:flex;
+  justify-content:center;
+  gap:40px;
+  padding:20px;
+  background:rgba(0,0,0,0.3);
+  backdrop-filter:blur(10px);
+  position:sticky;
+  top:0;
+}
+.nav div{
+  cursor:pointer;
+  font-weight:bold;
 }
 
-h1 { font-size: 42px; margin-bottom: 10px; }
-.time { margin-bottom: 15px; }
-
-input, textarea {
-  width: 100%;
-  padding: 8px;
-  margin: 6px 0;
-  border-radius: 6px;
-  border: none;
+/* 页面 */
+.page{
+  display:none;
+  padding:40px;
+  text-align:center;
+}
+.active{
+  display:block;
 }
 
-button {
-  padding: 8px 20px;
-  border-radius: 20px;
-  border: none;
-  cursor: pointer;
-  background: #0072ff;
-  color: white;
-  margin-top: 5px;
+/* iframe推荐区域 */
+.iframe-box{
+  margin-top:20px;
+  width:100%;
+  height:500px;
+  border-radius:10px;
+  overflow:hidden;
+}
+iframe{
+  width:100%;
+  height:100%;
+  border:none;
+  background:white;
+  border-radius:10px;
 }
 
-.message {
-  margin-top: 10px;
-  font-size: 14px;
-  text-align: left;
-}
-
-footer {
-  margin-top: 20px;
-  font-size: 12px;
-  opacity: 0.8;
+footer{
+  margin-top:30px;
+  font-size:12px;
+  opacity:0.7;
 }
 </style>
 </head>
 
 <body>
 
-<div class="card">
+<div class="nav">
+  <div onclick="showPage('home')">首页</div>
+  <div onclick="showPage('recommend')">我的推荐</div>
+  <div onclick="showPage('board')">留言板</div>
+</div>
+
+<!-- 首页 -->
+<div id="home" class="page active">
   <h1>Leo 🚀</h1>
-  <div class="time" id="time"></div>
+  <p style="margin-top:10px;">欢迎来到我的第一个网站</p>
+  <p id="time" style="margin-top:15px;"></p>
+</div>
 
-  <p>欢迎来到我的第一个网站</p>
+<!-- 推荐页 -->
+<div id="recommend" class="page">
+  <h2>🌟 我的推荐</h2>
 
-  <hr style="margin:20px 0;opacity:0.3;">
+  <h3 style="margin-top:30px;">🚇 中国地铁可视化</h3>
+  <p>原作者：高德地图数据可视化团队（GitHub开源项目）</p>
+  <p>获取方式：GitHub 搜索“中国地铁可视化”</p>
 
-  <h3>💬 留言板</h3>
-  <input type="text" id="name" placeholder="你的署名">
-  <textarea id="message" rows="3" placeholder="写下你的留言..."></textarea>
-  <button onclick="addMessage()">提交留言</button>
+  <div class="iframe-box">
+    <iframe src="https://service.shmetro.com/axlcz01/index.htm"></iframe>
+  </div>
 
-  <div id="messages" class="message"></div>
+  <h3 style="margin-top:40px;">🧠 Learn Anything</h3>
+  <p>原作者：Sahand Saba 等开发者</p>
+  <p>获取方式：https://github.com/learn-anything/learn-anything.xyz</p>
 
-  <div style="margin-top:20px;">
-    <audio id="bgm" controls loop>
-      <source src="music.mp3" type="audio/mpeg">
-    </audio>
+  <div class="iframe-box">
+    <iframe src="https://learn-anything.xyz/"></iframe>
   </div>
 
   <footer>
-    🎵 当前音乐：<span id="musicName">music.mp3</span><br>
-    访问次数：<span id="visitCount"></span>
+    ⚠️ 所有项目版权归原作者所有，仅作学习展示用途
   </footer>
 </div>
 
+<!-- 留言板 -->
+<div id="board" class="page">
+  <h2>💬 留言板</h2>
+  <input type="text" id="name" placeholder="你的署名"><br><br>
+  <textarea id="message" rows="3" placeholder="写下你的留言..." style="width:60%;"></textarea><br><br>
+  <button onclick="addMessage()">提交</button>
+
+  <div id="messages" style="margin-top:20px;"></div>
+</div>
+
 <script>
-/* 时间显示 */
+
+/* 页面切换 */
+function showPage(id){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+/* 时间 */
 function updateTime(){
-  const now = new Date();
-  document.getElementById("time").innerText = now.toLocaleString();
+  document.getElementById("time").innerText=
+    new Date().toLocaleString();
 }
 setInterval(updateTime,1000);
 updateTime();
 
-/* 自动变色 */
-function setBackground(){
+/* 自动背景 */
+function setBg(){
   const h=new Date().getHours();
   if(h>=5&&h<12) document.body.className="morning";
   else if(h>=12&&h<17) document.body.className="afternoon";
   else if(h>=17&&h<20) document.body.className="evening";
   else document.body.className="night";
 }
-setBackground();
-
-/* 本地访问统计 */
-let count=localStorage.getItem("visitCount");
-count=count?parseInt(count)+1:1;
-localStorage.setItem("visitCount",count);
-document.getElementById("visitCount").innerText=count;
+setBg();
 
 /* 留言板 */
 function loadMessages(){
-  let messages=JSON.parse(localStorage.getItem("messages"))||[];
-  let container=document.getElementById("messages");
-  container.innerHTML="";
-  messages.forEach(m=>{
-    let div=document.createElement("div");
-    div.innerText=m.text+" —— "+m.name;
-    container.appendChild(div);
+  let msgs=JSON.parse(localStorage.getItem("msgs"))||[];
+  let box=document.getElementById("messages");
+  box.innerHTML="";
+  msgs.forEach(m=>{
+    let d=document.createElement("div");
+    d.innerText=m.text+" —— "+m.name;
+    box.appendChild(d);
   });
 }
 function addMessage(){
   let name=document.getElementById("name").value||"匿名";
   let text=document.getElementById("message").value;
-  if(!text) return;
-  let messages=JSON.parse(localStorage.getItem("messages"))||[];
-  messages.push({name:name,text:text});
-  localStorage.setItem("messages",JSON.stringify(messages));
+  if(!text)return;
+  let msgs=JSON.parse(localStorage.getItem("msgs"))||[];
+  msgs.push({name:name,text:text});
+  localStorage.setItem("msgs",JSON.stringify(msgs));
   document.getElementById("message").value="";
   loadMessages();
 }
 loadMessages();
 
-/* 音乐名称显示 */
-document.getElementById("musicName").innerText=
-document.getElementById("bgm").querySelector("source").src.split("/").pop();
 </script>
 
 </body>
