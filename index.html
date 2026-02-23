@@ -191,6 +191,10 @@ function showPage(id){
   document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
   document.getElementById(id).classList.add("active");
 
+  if(id === "board"){
+    loadDisqus();  // 只在留言板页面加载 Disqus
+  }
+
   const video=document.getElementById("bgVideo");
   const overlay=document.getElementById("overlay");
 
@@ -267,12 +271,15 @@ function toggleMusic(){
 }
 
 /* Disqus 评论区 */
-(function() { // DON'T EDIT BELOW THIS LINE
+function loadDisqus(){
+  if(window.disqusLoaded) return;
+  window.disqusLoaded = true;
+
   var d = document, s = d.createElement('script');
   s.src = 'https://leo2026.disqus.com/embed.js';
   s.setAttribute('data-timestamp', +new Date());
   (d.head || d.body).appendChild(s);
-})();
+}
 
 showPage('home');
 </script>
