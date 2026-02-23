@@ -125,6 +125,7 @@ button{
   <div onclick="showPage('home')">首页</div>
   <div onclick="showPage('recommend')">我的推荐</div>
   <div onclick="showPage('board')">留言板</div>
+  <div onclick="showPage('log')">网站日志</div>
 </div>
 
 <!-- 首页 -->
@@ -161,6 +162,15 @@ button{
   <button onclick="addMessage()">提交</button>
 
   <div id="messages" style="margin-top:20px;"></div>
+</div>
+  <!-- 网站日志 -->
+<div id="log" class="page">
+  <h2>📝 网站日志</h2>
+
+  <div class="iframe-box" style="margin-top:30px;">
+    <iframe src="posts/first-post.html"></iframe>
+  </div>
+
 </div>
 
 <script>
