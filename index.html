@@ -25,8 +25,6 @@ body{
   z-index:-2;
   display:none;
 }
-
-/* 暗色遮罩 */
 .video-overlay{
   position:fixed;
   top:0;
@@ -71,15 +69,12 @@ body{
   padding:60px 20px;
   text-align:center;
 }
-.active{
-  display:block;
-}
+.active{display:block;}
 
-/* iframe */
 .iframe-box{
   margin-top:20px;
   width:100%;
-  height:500px;
+  height:80vh;
   border-radius:12px;
   overflow:hidden;
 }
@@ -106,8 +101,23 @@ button{
   background:#0072ff;
   color:white;
 }
-#messages div{
-  margin-top:10px;
+#messages div{margin-top:10px;}
+
+/* ===== 音乐播放器 ===== */
+.music-player{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:rgba(0,0,0,0.5);
+  backdrop-filter:blur(10px);
+  padding:15px 20px;
+  border-radius:15px;
+  z-index:20;
+  font-size:14px;
+}
+.music-player button{
+  margin-top:8px;
+  width:100%;
 }
 </style>
 </head>
@@ -115,10 +125,20 @@ button{
 <body>
 
 <!-- 背景视频 -->
-<video id="bgVideo" autoplay muted loop playsinline>
+<video id="bgVideo" autoplay muted loop playsinline preload="auto">
   <source src="tahiti.mp4" type="video/mp4">
 </video>
 <div class="video-overlay" id="overlay"></div>
+
+<!-- 音乐 -->
+<audio id="bgMusic" loop>
+  <source src="music.mp3" type="audio/mpeg">
+</audio>
+
+<div class="music-player">
+  🎵 <span id="musicName">Summer Breeze</span><br>
+  <button onclick="toggleMusic()">播放 / 暂停</button>
+</div>
 
 <!-- 导航 -->
 <div class="nav">
@@ -133,22 +153,12 @@ button{
   <h1 style="font-size:48px;">Leo 🚀</h1>
   <p style="margin-top:10px;">欢迎来到我的第一个网站</p>
   <p id="time" style="margin-top:15px;"></p>
+  <p id="visit" style="margin-top:10px;"></p>
 </div>
 
 <!-- 推荐页 -->
 <div id="recommend" class="page">
   <h2>🌟 我的推荐</h2>
-
-  <h3 style="margin-top:30px;">🚇 中国地铁可视化</h3>
-  <p>原作者：开源可视化项目开发者</p>
-  <p>获取方式：GitHub 搜索“中国地铁可视化”</p>
-  <div class="iframe-box">
-    <iframe src="https://service.shmetro.com/axlcz01/index.htm"></iframe>
-  </div>
-
-  <h3 style="margin-top:40px;">🧠 Learn Anything</h3>
-  <p>原作者：Sahand Saba 等开发者</p>
-  <p>获取方式：https://github.com/learn-anything/learn-anything.xyz</p>
   <div class="iframe-box">
     <iframe src="https://learn-anything.xyz/"></iframe>
   </div>
@@ -160,17 +170,15 @@ button{
   <input type="text" id="name" placeholder="你的署名"><br>
   <textarea id="message" rows="3" placeholder="写下你的留言..."></textarea><br>
   <button onclick="addMessage()">提交</button>
-
   <div id="messages" style="margin-top:20px;"></div>
 </div>
-  <!-- 网站日志 -->
+
+<!-- 网站日志 -->
 <div id="log" class="page">
   <h2>📝 网站日志</h2>
-
-  <div class="iframe-box" style="margin-top:30px;">
+  <div class="iframe-box">
     <iframe src="posts/first-post.html"></iframe>
   </div>
-
 </div>
 
 <script>
@@ -186,7 +194,7 @@ function showPage(id){
   if(id==="home"){
     video.style.display="block";
     overlay.style.display="block";
-    document.body.className="";
+    document.body.classList.remove("morning","afternoon","evening","night");
   }else{
     video.style.display="none";
     overlay.style.display="none";
@@ -194,15 +202,15 @@ function showPage(id){
   }
 }
 
-/* 自动时间 */
+/* 时间 */
 function updateTime(){
   document.getElementById("time").innerText=
-    new Date().toLocaleString();
+    "当前时间：" + new Date().toLocaleString();
 }
 setInterval(updateTime,1000);
 updateTime();
 
-/* 渐变背景 */
+/* 背景渐变 */
 function setBg(){
   const h=new Date().getHours();
   if(h>=5&&h<12) document.body.className="morning";
@@ -212,6 +220,12 @@ function setBg(){
 }
 setBg();
 
+/* 访问统计 */
+let count=localStorage.getItem("visitCount")||0;
+count++;
+localStorage.setItem("visitCount",count);
+document.getElementById("visit").innerText="访问次数："+count;
+
 /* 留言板 */
 function loadMessages(){
   let msgs=JSON.parse(localStorage.getItem("msgs"))||[];
@@ -219,7 +233,7 @@ function loadMessages(){
   box.innerHTML="";
   msgs.forEach(m=>{
     let d=document.createElement("div");
-    d.innerText=m.text+" —— "+m.name;
+    d.innerText=m.text+" —— "+m.name+" ("+m.time+")";
     box.appendChild(d);
   });
 }
@@ -228,12 +242,26 @@ function addMessage(){
   let text=document.getElementById("message").value;
   if(!text)return;
   let msgs=JSON.parse(localStorage.getItem("msgs"))||[];
-  msgs.push({name:name,text:text});
+  msgs.push({
+    name:name,
+    text:text,
+    time:new Date().toLocaleString()
+  });
   localStorage.setItem("msgs",JSON.stringify(msgs));
   document.getElementById("message").value="";
   loadMessages();
 }
 loadMessages();
+
+/* 音乐控制 */
+const music=document.getElementById("bgMusic");
+function toggleMusic(){
+  if(music.paused){
+    music.play();
+  }else{
+    music.pause();
+  }
+}
 
 showPage('home');
 </script>
