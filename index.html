@@ -1,99 +1,133 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>GHS 的第一个网站</title>
+<meta charset="UTF-8">
+<title>GHS的第一个网站</title>
 
-  <style>
-    body {
-      background-color: #f5f7fa;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial;
-      margin: 0;
-      padding: 0;
-    }
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-    .container {
-      max-width: 800px;
-      margin: 120px auto;
-      padding: 20px;
-    }
+body {
+  height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: 1s;
+  color: white;
+}
 
-    h1 {
-      font-size: 36px;
-      color: #2c3e50;
-    }
+/* 不同时间段背景 */
+.morning {
+  background: linear-gradient(45deg, #ff9a9e, #fad0c4);
+}
 
-    .subtitle {
-      color: #666;
-      margin-bottom: 40px;
-    }
+.afternoon {
+  background: linear-gradient(45deg, #4facfe, #00f2fe);
+}
 
-    .card {
-      background: white;
-      padding: 20px;
-      margin-bottom: 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-      transition: 0.2s ease;
-    }
+.evening {
+  background: linear-gradient(45deg, #f093fb, #f5576c);
+}
 
-    .card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 6px 18px rgba(0,0,0,0.1);
-    }
+.night {
+  background: linear-gradient(45deg, #141e30, #243b55);
+}
 
-    a {
-      text-decoration: none;
-      color: #3498db;
-      font-weight: bold;
-    }
+.card {
+  backdrop-filter: blur(20px);
+  background: rgba(255,255,255,0.1);
+  padding: 60px;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
 
-    footer {
-      margin-top: 60px;
-      font-size: 14px;
-      color: #999;
-    }
+h1 {
+  font-size: 48px;
+  margin-bottom: 20px;
+}
 
-    .nav {
-      background: white;
-      padding: 15px 0;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-      position: fixed;
-      width: 100%;
-      top: 0;
-    }
+.time {
+  font-size: 20px;
+  margin-bottom: 20px;
+}
 
-    .nav-inner {
-      max-width: 800px;
-      margin: 0 auto;
-    }
-  </style>
+.visit {
+  margin-top: 20px;
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+.btn {
+  display: inline-block;
+  padding: 10px 25px;
+  border-radius: 25px;
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+  background: linear-gradient(45deg, #00c6ff, #0072ff);
+  transition: 0.3s;
+  margin-top: 20px;
+}
+
+.btn:hover {
+  transform: scale(1.1);
+}
+</style>
 </head>
 
 <body>
 
-  <div class="nav">
-    <div class="nav-inner">
-      <a href="index.html" style="margin-right:20px;">首页</a>
-      <a href="#">关于我</a>
-    </div>
-  </div>
+<div class="card">
+  <h1>Leo 🚀</h1>
+  <div class="time" id="time"></div>
+  <p>欢迎来到我的第一个网站</p>
+  <a href="posts/first-post.html" class="btn">进入成长记录</a>
+  <div class="visit">访问次数：<span id="visitCount"></span></div>
+</div>
 
-  <div class="container">
-    <h1>Leo 🚀</h1>
-    <p class="subtitle">成长记录</p>
+<script>
+/* 自动时间显示 */
+function updateTime() {
+  const now = new Date();
+  const timeString = now.toLocaleString();
+  document.getElementById("time").innerText = timeString;
+}
+setInterval(updateTime, 1000);
+updateTime();
 
-    <div class="card">
-      <a href="posts/first-post.html">
-        我的第一个学习记录
-      </a>
-      <p>今天我成功搭建了自己的网站——2026.2.23</p>
-    </div>
+/* 根据时间自动变色 */
+function setBackgroundByTime() {
+  const hour = new Date().getHours();
+  let body = document.body;
 
-    <footer>
-      © 2026 Leo | Powered by GitHub Pages
-    </footer>
-  </div>
+  if (hour >= 5 && hour < 12) {
+    body.className = "morning";
+  } else if (hour >= 12 && hour < 17) {
+    body.className = "afternoon";
+  } else if (hour >= 17 && hour < 20) {
+    body.className = "evening";
+  } else {
+    body.className = "night";
+  }
+}
+setBackgroundByTime();
+
+/* 本地访问统计（简单版） */
+let count = localStorage.getItem("visitCount");
+if (!count) {
+  count = 1;
+} else {
+  count = parseInt(count) + 1;
+}
+localStorage.setItem("visitCount", count);
+document.getElementById("visitCount").innerText = count;
+</script>
 
 </body>
 </html>
